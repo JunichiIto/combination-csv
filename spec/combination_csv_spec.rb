@@ -21,7 +21,8 @@ class CombinationCsv
   def self.generate_combination(assigned_number, col_size)
     max = "#{assigned_number}#{'0' * (col_size - 1)}".to_i
     (assigned_number..max).map { |number|
-      number.to_s.rjust(3, '0').chars.map(&:to_i) if number.to_s.chars.map(&:to_i).inject(:+) == assigned_number
+      target = number.to_s.chars.map(&:to_i).inject(:+) == assigned_number
+      number.to_s.rjust(3, '0').chars.map(&:to_i) if target
     }.compact
   end
 end
