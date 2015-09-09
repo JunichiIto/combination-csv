@@ -22,11 +22,11 @@ class CombinationCsv
     assigned_number.downto(1).each do |n|
       next_number = assigned_number - n
       if next_number <= 1
-        result << [n, next_number, 0].sort.reverse
+        result << [n, next_number, 0].sort
       else
         next_number.downto(1).each do |m|
           next_next_number = next_number - m
-          result << [n, m, next_next_number].sort.reverse
+          result << [n, m, next_next_number].sort
         end
       end
     end
