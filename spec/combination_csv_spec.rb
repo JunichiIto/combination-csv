@@ -1,6 +1,22 @@
+require 'csv'
 require 'spec_helper'
 
 class CombinationCsv
+  def self.generate_combination_csv(input_path, output_dir, assigned_number, col_size)
+    input_arrays = CSV.read(input_path)
+    generate_combination(assigned_number, col_size).each do |numbers|
+      output_path = File.join(output_dir, "A1_#{numbers.join}.csv")
+      CSV.open(output_path, 'w') do |csv|
+        input_arrays.each.with_index do |input_cols, i|
+          output_cols = input_cols.dup
+          output_cols.each(&:strip!)
+          output_cols[1] = numbers[i]
+          csv << output_cols
+        end
+      end
+    end
+  end
+
   def self.generate_combination(assigned_number, col_size)
     max = "#{assigned_number}#{'0' * (col_size - 1)}".to_i
     (assigned_number..max).map { |number|
@@ -10,6 +26,39 @@ class CombinationCsv
 end
 
 describe CombinationCsv do
+  describe '::generate_combination_csv' do
+    let(:input_dir) { File.expand_path('../input', __FILE__) }
+    let(:input_path) { File.join(input_dir, 'test2.csv') }
+    let(:output_dir) { File.expand_path('../output', __FILE__) }
+    def output_files
+      Dir.glob(File.join(output_dir, '*.csv'))
+    end
+    before do
+      FileUtils.rm(output_files)
+    end
+    example do
+      expect {
+        CombinationCsv.generate_combination_csv(input_path, output_dir, 6 ,3)
+      }.to change { output_files.size }.from(0).to(28)
+
+      output_path = File.join(output_dir, 'A1_600.csv')
+      result = CSV.read(output_path)
+      expect(result).to eq([
+                               %w(A1 6 test),
+                               %w(A2 0 test),
+                               %w(A3 0 test)
+                           ])
+
+      output_path = File.join(output_dir, 'A1_510.csv')
+      result = CSV.read(output_path)
+      expect(result).to eq([
+                              %w(A1 5 test),
+                              %w(A2 1 test),
+                              %w(A3 0 test)
+      ])
+    end
+  end
+
   describe '::generate_combination' do
     let(:expected) do
       [
