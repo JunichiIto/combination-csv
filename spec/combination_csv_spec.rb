@@ -17,13 +17,20 @@ class CombinationCsv
     end
   end
 
-  # ゴリ押し実装なので、もっとスマートなロジックがあるはず
-  def self.generate_combination(assigned_number, col_size)
-    max = "#{assigned_number}#{'0' * (col_size - 1)}".to_i
-    (assigned_number..max).map { |number|
-      target = number.to_s.chars.map(&:to_i).inject(:+) == assigned_number
-      number.to_s.rjust(3, '0').chars.map(&:to_i) if target
-    }.compact
+  def self.generate_combination(assigned_number, col_size, memo = [])
+    result = []
+    assigned_number.downto(1).each do |n|
+      next_number = assigned_number - n
+      if next_number <= 1
+        result << [n, next_number, 0].sort.reverse
+      else
+        next_number.downto(1).each do |m|
+          next_next_number = next_number - m
+          result << [n, m, next_next_number].sort.reverse
+        end
+      end
+    end
+    result.uniq.flat_map{|array| array.permutation.to_a }.uniq
   end
 end
 
