@@ -2,7 +2,7 @@ require 'csv'
 require 'spec_helper'
 
 class CombinationCsv
-  def self.generate_combination_csv(input_path, output_dir, assigned_number, col_size)
+  def self.generate_csv(input_path, output_dir, assigned_number, col_size)
     input_arrays = CSV.read(input_path)
     generate_combination(assigned_number, col_size).each do |numbers|
       output_path = File.join(output_dir, "A1_#{numbers.join}.csv")
@@ -17,6 +17,7 @@ class CombinationCsv
     end
   end
 
+  # ゴリ押し実装なので、もっとスマートなロジックがあるはず
   def self.generate_combination(assigned_number, col_size)
     max = "#{assigned_number}#{'0' * (col_size - 1)}".to_i
     (assigned_number..max).map { |number|
@@ -26,7 +27,7 @@ class CombinationCsv
 end
 
 describe CombinationCsv do
-  describe '::generate_combination_csv' do
+  describe '::generate_csv' do
     let(:input_dir) { File.expand_path('../input', __FILE__) }
     let(:input_path) { File.join(input_dir, 'test2.csv') }
     let(:output_dir) { File.expand_path('../output', __FILE__) }
@@ -38,7 +39,7 @@ describe CombinationCsv do
     end
     example do
       expect {
-        CombinationCsv.generate_combination_csv(input_path, output_dir, 6 ,3)
+        CombinationCsv.generate_csv(input_path, output_dir, 6 ,3)
       }.to change { output_files.size }.from(0).to(28)
 
       output_path = File.join(output_dir, 'A1_600.csv')
