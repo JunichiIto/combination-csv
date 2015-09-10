@@ -8,10 +8,10 @@ class CombinationCsv
       output_path = File.join(output_dir, "A1_#{numbers.join}.csv")
       CSV.open(output_path, 'w') do |csv|
         input_arrays.each_with_index do |input_cols, i|
-          output_cols = input_cols.dup
-          output_cols.each(&:strip!)
-          output_cols[1] = numbers[i]
-          csv << output_cols
+          csv << input_cols.dup.tap do |output_cols|
+            output_cols.each(&:strip!)
+            output_cols[1] = numbers[i]
+          end
         end
       end
     end
@@ -19,11 +19,9 @@ class CombinationCsv
 
   def self.generate_combination(assigned_number, col_size)
     return [assigned_number] if col_size == 1
-    assigned_number.downto(0).each_with_object([]) do |n, result|
+    assigned_number.downto(0).flat_map do |n|
       child_results = generate_combination(assigned_number - n, col_size - 1)
-      child_results.each do |numbers|
-        result << [n, *numbers]
-      end
+      child_results.map { |numbers| [n, *numbers] }
     end
   end
 end
@@ -105,21 +103,21 @@ describe CombinationCsv do
     context 'assigned_number is 10' do
       let(:expected) do
         [
-          [10, 0],
-          [9, 1],
-          [8, 2],
-          [7, 3],
-          [6, 4],
-          [5, 5],
-          [4, 6],
-          [3, 7],
-          [2, 8],
-          [1, 9],
-          [0, 10]
+            [10, 0],
+            [9, 1],
+            [8, 2],
+            [7, 3],
+            [6, 4],
+            [5, 5],
+            [4, 6],
+            [3, 7],
+            [2, 8],
+            [1, 9],
+            [0, 10]
         ]
       end
       example do
-        result = CombinationCsv.generate_combination(10 ,2)
+        result = CombinationCsv.generate_combination(10, 2)
         expect(result).to contain_exactly(*expected)
       end
     end
@@ -127,16 +125,16 @@ describe CombinationCsv do
     context 'col_size is 4' do
       let(:expected) do
         [
-            [2, 0, 0 , 0],
-            [1, 1, 0 , 0],
-            [1, 0, 1 , 0],
-            [1, 0, 0 , 1],
-            [0, 2, 0 , 0],
-            [0, 1, 1 , 0],
-            [0, 1, 0 , 1],
-            [0, 0, 2 , 0],
-            [0, 0, 1 , 1],
-            [0, 0, 0 , 2],
+            [2, 0, 0, 0],
+            [1, 1, 0, 0],
+            [1, 0, 1, 0],
+            [1, 0, 0, 1],
+            [0, 2, 0, 0],
+            [0, 1, 1, 0],
+            [0, 1, 0, 1],
+            [0, 0, 2, 0],
+            [0, 0, 1, 1],
+            [0, 0, 0, 2],
         ]
       end
       example do
