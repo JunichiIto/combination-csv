@@ -7,12 +7,16 @@ class CombinationCsv
     generate_combination(assigned_number, col_size).each do |numbers|
       output_path = File.join(output_dir, "A1_#{numbers.join}.csv")
       CSV.open(output_path, 'w') do |csv|
-        input_arrays.each_with_index do |input_cols, i|
-          csv << input_cols.dup.tap do |output_cols|
-            output_cols.each(&:strip!)
-            output_cols[1] = numbers[i]
-          end
-        end
+        write_csv_rows(csv, input_arrays, numbers)
+      end
+    end
+  end
+
+  def self.write_csv_rows(csv, input_arrays, numbers)
+    input_arrays.each_with_index do |input_cols, i|
+      csv << input_cols.dup.tap do |output_cols|
+        output_cols.each(&:strip!)
+        output_cols[1] = numbers[i]
       end
     end
   end
