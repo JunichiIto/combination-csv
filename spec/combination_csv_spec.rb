@@ -17,13 +17,14 @@ class CombinationCsv
     end
   end
 
-  # ゴリ押し実装なので、もっとスマートなロジックがあるはず
   def self.generate_combination(assigned_number, col_size)
-    max = "#{assigned_number}#{'0' * (col_size - 1)}".to_i
-    (assigned_number..max).map { |number|
-      target = number.to_s.chars.map(&:to_i).inject(:+) == assigned_number
-      number.to_s.rjust(3, '0').chars.map(&:to_i) if target
-    }.compact
+    return [assigned_number] if col_size == 1
+    assigned_number.downto(0).each_with_object([]) do |n, result|
+      child_results = generate_combination(assigned_number - n, col_size - 1)
+      child_results.each do |numbers|
+        result << [n, *numbers]
+      end
+    end
   end
 end
 
@@ -99,6 +100,49 @@ describe CombinationCsv do
     example do
       result = CombinationCsv.generate_combination(6, 3)
       expect(result).to contain_exactly(*expected)
+    end
+
+    context 'assigned_number is 10' do
+      let(:expected) do
+        [
+          [10, 0],
+          [9, 1],
+          [8, 2],
+          [7, 3],
+          [6, 4],
+          [5, 5],
+          [4, 6],
+          [3, 7],
+          [2, 8],
+          [1, 9],
+          [0, 10]
+        ]
+      end
+      example do
+        result = CombinationCsv.generate_combination(10 ,2)
+        expect(result).to contain_exactly(*expected)
+      end
+    end
+
+    context 'col_size is 4' do
+      let(:expected) do
+        [
+            [2, 0, 0 , 0],
+            [1, 1, 0 , 0],
+            [1, 0, 1 , 0],
+            [1, 0, 0 , 1],
+            [0, 2, 0 , 0],
+            [0, 1, 1 , 0],
+            [0, 1, 0 , 1],
+            [0, 0, 2 , 0],
+            [0, 0, 1 , 1],
+            [0, 0, 0 , 2],
+        ]
+      end
+      example do
+        result = CombinationCsv.generate_combination(2, 4)
+        expect(result).to contain_exactly(*expected)
+      end
     end
   end
 end
