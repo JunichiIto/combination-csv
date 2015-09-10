@@ -16,8 +16,8 @@ class CombinationCsv
   end
 
   def self.generate_all_combinations(input_arrays, assigned_number)
-    count_by_group = read_count_by_group(input_arrays)
-    combination_hash = combination_by_group(count_by_group, assigned_number)
+    count_by_group = generate_count_by_group(input_arrays)
+    combination_hash = generate_combination_by_group(count_by_group, assigned_number)
     all_arrays = combination_hash.values
     first = all_arrays.shift
     all_combinations = first.product(*all_arrays)
@@ -25,13 +25,13 @@ class CombinationCsv
     all_combinations.map {|combinations| names.zip(combinations).to_h }
   end
 
-  def self.combination_by_group(count_by_group, assigned_number)
+  def self.generate_combination_by_group(count_by_group, assigned_number)
     count_by_group.map {|name, count|
       [name, generate_combination(assigned_number, count)]
     }.to_h
   end
 
-  def self.read_count_by_group(input_arrays)
+  def self.generate_count_by_group(input_arrays)
     name_and_numbers = input_arrays.map{|cols|
       /(?<name>[A-Z]+)(?<number>\d+)/ =~ cols.first
       [name, number.to_i]
@@ -124,7 +124,7 @@ describe CombinationCsv do
 
   end
 
-  describe '::combination_by_group' do
+  describe '::generate_combination_by_group' do
     let(:expected) do
       {
           'A' => [[2, 0], [1, 1], [0, 2]],
@@ -134,17 +134,17 @@ describe CombinationCsv do
     end
     example do
       count_by_group = {'A' => 2, 'B' => 2, 'C' => 1}
-      result = CombinationCsv.combination_by_group(count_by_group, 2)
+      result = CombinationCsv.generate_combination_by_group(count_by_group, 2)
       expect(result).to eq expected
     end
   end
 
-  describe 'read_count_by_group' do
+  describe 'generate_count_by_group' do
     let(:input_dir) { File.expand_path('../input', __FILE__) }
     let(:input_path) { File.join(input_dir, 'test3-1.csv') }
     example do
       input_arrays = CSV.read(input_path)
-      result = CombinationCsv.read_count_by_group(input_arrays)
+      result = CombinationCsv.generate_count_by_group(input_arrays)
       expect(result).to eq({'A' => 2, 'B' => 2, 'C' => 1})
     end
   end
