@@ -4,7 +4,7 @@ require 'spec_helper'
 class CombinationCsv
   def self.generate_csv(input_path, output_dir, assigned_number, col_size)
     input_arrays = CSV.read(input_path)
-    generate_combination(assigned_number, col_size).each do |numbers|
+    generate_permutation(assigned_number, col_size).each do |numbers|
       output_path = File.join(output_dir, "A1_#{numbers.join}.csv")
       CSV.open(output_path, 'w') do |csv|
         input_arrays.each_with_index do |input_cols, i|
@@ -17,22 +17,22 @@ class CombinationCsv
     end
   end
 
-  def self.hoge(assigned_number, col_size)
+  def self.generate_permutation(assigned_number, col_size)
+    result = generate_combination(assigned_number, col_size)
+    result.flat_map{|numbers| numbers.permutation.to_a }.uniq
+  end
+
+  def self.generate_combination(assigned_number, col_size)
     return [assigned_number] if col_size == 1
     result = []
     assigned_number.downto(0).each do |n|
       next_number = assigned_number - n
-      child_results = hoge(next_number, col_size - 1)
-      child_results.each do |array|
-        result << [n, *array]
+      child_results = generate_combination(next_number, col_size - 1)
+      child_results.each do |numbers|
+        result << [n, *numbers]
       end
     end
     result.map(&:sort).uniq
-  end
-
-  def self.generate_combination(assigned_number, col_size)
-    result = hoge(assigned_number, col_size)
-    result.flat_map(&:permutation).flat_map(&:to_a).uniq.tap{|x| p x}
   end
 end
 
@@ -72,7 +72,7 @@ describe CombinationCsv do
     end
   end
 
-  describe '::generate_combination' do
+  describe '::generate_permutation' do
     let(:expected) do
       [
           [6, 0, 0],
@@ -106,7 +106,7 @@ describe CombinationCsv do
       ]
     end
     example do
-      result = CombinationCsv.generate_combination(6, 3)
+      result = CombinationCsv.generate_permutation(6, 3)
       expect(result).to contain_exactly(*expected)
     end
   end
