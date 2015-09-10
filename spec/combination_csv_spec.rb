@@ -109,5 +109,27 @@ describe CombinationCsv do
       result = CombinationCsv.generate_permutation(6, 3)
       expect(result).to contain_exactly(*expected)
     end
+
+    context 'assigned_number is 10' do
+      let(:expected) do
+        [
+          [10, 0],
+          [9, 1],
+          [8, 2],
+          [7, 3],
+          [6, 4],
+          [5, 5],
+          [4, 6],
+          [3, 7],
+          [2, 8],
+          [1, 9],
+          [0, 10]
+        ]
+      end
+      example do
+        result = CombinationCsv.generate_permutation(10 ,2)
+        expect(result).to contain_exactly(*expected)
+      end
+    end
   end
 end
