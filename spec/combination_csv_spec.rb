@@ -17,20 +17,22 @@ class CombinationCsv
     end
   end
 
-  def self.generate_combination(assigned_number, col_size, memo = [])
+  def self.hoge(assigned_number, col_size)
+    return [assigned_number] if col_size == 1
     result = []
-    assigned_number.downto(1).each do |n|
+    assigned_number.downto(0).each do |n|
       next_number = assigned_number - n
-      if next_number <= 1
-        result << [n, next_number, 0].sort
-      else
-        next_number.downto(1).each do |m|
-          next_next_number = next_number - m
-          result << [n, m, next_next_number].sort
-        end
+      child_results = hoge(next_number, col_size - 1)
+      child_results.each do |array|
+        result << [n, *array]
       end
     end
-    result.uniq.flat_map{|array| array.permutation.to_a }.uniq
+    result.map(&:sort).uniq
+  end
+
+  def self.generate_combination(assigned_number, col_size)
+    result = hoge(assigned_number, col_size)
+    result.flat_map(&:permutation).flat_map(&:to_a).uniq.tap{|x| p x}
   end
 end
 
