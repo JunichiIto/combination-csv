@@ -20,8 +20,7 @@ class CombinationCsv
   def self.generate_combination(assigned_number, col_size)
     return [assigned_number] if col_size == 1
     assigned_number.downto(0).each_with_object([]) do |n, result|
-      next_number = assigned_number - n
-      child_results = generate_combination(next_number, col_size - 1)
+      child_results = generate_combination(assigned_number - n, col_size - 1)
       child_results.each do |numbers|
         result << [n, *numbers]
       end
