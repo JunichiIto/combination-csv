@@ -123,5 +123,26 @@ describe CombinationCsv do
         expect(result).to contain_exactly(*expected)
       end
     end
+
+    context 'col_size is 4' do
+      let(:expected) do
+        [
+            [2, 0, 0 , 0],
+            [1, 1, 0 , 0],
+            [1, 0, 1 , 0],
+            [1, 0, 0 , 1],
+            [0, 2, 0 , 0],
+            [0, 1, 1 , 0],
+            [0, 1, 0 , 1],
+            [0, 0, 2 , 0],
+            [0, 0, 1 , 1],
+            [0, 0, 0 , 2],
+        ]
+      end
+      example do
+        result = CombinationCsv.generate_combination(2, 4)
+        expect(result).to contain_exactly(*expected)
+      end
+    end
   end
 end
